@@ -2,11 +2,14 @@ package br.com.ericsoares.services;
 
 import static br.com.ericsoares.utils.DataUtils.isMesmaData;
 import static br.com.ericsoares.utils.DataUtils.obterDataComDiferencaDias;
+import static br.com.ericsoares.utils.DataUtils.verificarDiaSemana;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -22,6 +25,7 @@ import br.com.ericsoares.entities.Locacao;
 import br.com.ericsoares.entities.Usuario;
 import br.com.ericsoares.exceptions.FilmeSemEstoqueException;
 import br.com.ericsoares.exceptions.LocadoraException;
+import br.com.ericsoares.utils.DataUtils;
 
 public class LocacaoServiceTest {
 
@@ -175,6 +179,21 @@ public class LocacaoServiceTest {
 		
 		// ETAPA 3 : VERIFICAÇÃO
 		assertThat(resultado.getValor(), is(14.0));
+	}
+	
+	@Test
+	public void deveDevolverFilmeNaSegundaCasoAlugueNoSabado() throws FilmeSemEstoqueException, LocadoraException {
+		// ETAPA 1 : CENARIO
+		Usuario usuario = new Usuario("Usuario 1");
+		List<Filme> filmes = Arrays.asList( new Filme("Filme1", 1, 5.0));
+		
+		
+		// ETAPA 2 : AÇÃO
+		Locacao retorno = service.alugarFilme(usuario, filmes);
+		
+		// ETAPA 3 : VERIFICAÇÃO
+		boolean ehSegunda = verificarDiaSemana(retorno.getDataRetorno(), Calendar.MONDAY);
+		assertTrue(ehSegunda); 
 	}
 		
 	
