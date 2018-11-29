@@ -9,7 +9,9 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ErrorCollector;
 
 import br.com.ericsoares.entities.Filme;
 import br.com.ericsoares.entities.Locacao;
@@ -17,12 +19,15 @@ import br.com.ericsoares.entities.Usuario;
 
 public class LocacaoServiceTest {
 
+	// OBS : UTILIZANDO-SE DO IMPORT STATIC SEU CODIGO GANHA MELHOR LEGIBIDADE  ------ ATALHO CTRL + SHIFT + M ( APÓS A VIRGULA )
+	// OBS : ALÉM DO MÉTODO UTILIZADO, NO CASO USANDO UMA RULE, PODEMOS SEPARAR NOSSO ÚNICO, EM TESTES MENORES, PARA TESTAR CADA FUNCIONALIDADE DA CLASSE QUE ESTAREMOS TESTANDO
+	
+	@Rule // A annotation @Rule IRÁ DIZER QUE UMA REGRA SERÁ ESPECIFICADA. REGRAS AS QUAIS SÃO DE UMA API DO JUNIT PARA LIDAR COM ALGUMAS PECUALIDADES ( PODEMOS CRIAR NOSSAS PROPRIAS TB)
+	public ErrorCollector err = new ErrorCollector(); // UTILIZANDO ESSA REGRA, IREMOS FAZER COM QUE, MESMO NÃO DIVINDO NOSSO TESTE,
+	// EM MAIS DE UM PARA TESTAR SEPARADAMENTE CADA MÉTODO, AINDA SIM IREMOS CONSEGUIR VISUALIZAR CADA ERRO QUE NOSSO ÚNICO TESTE POSSUI
+
 	@Test
-	public void test() {
-		
-		// OBS : UTILIZANDO-SE DO IMPORT STATIC SEU CODIGO GANHA MELHOR LEGIBIDADE
-				// ------ ATALHO CTRL + SHIFT + M ( APÓS A VIRGULA )
-		
+	public void testLocacao() {
 		
 		// ETAPA 1 : CENARIO
 		LocacaoService service = new LocacaoService();
@@ -33,11 +38,9 @@ public class LocacaoServiceTest {
 		Locacao locacao = service.alugarFilme(usuario, filme);
 
 		// ETAPA 3 : VERIFICAÇÃO
-		assertThat(locacao.getValor(), is(equalTo(5.0))); // O Assert.assertThat É UM ASSERT GENERICO, QUE IRÁ RECEBER
-															// PRIMEIRO É O VALOR ATUAL E O SEGUNDO É O VALOR ESPERADO
-		assertThat(locacao.getValor(), is(not(7.0)));
-		assertThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
-		assertThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(true));
+		err.checkThat(locacao.getValor(), is(equalTo(8.0))); // O Assert.assertThat É UM ASSERT GENERICO, QUE IRÁ RECEBER PRIMEIRO É O VALOR ATUAL E O SEGUNDO É O VALOR ESPERADO
+		err.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
+		err.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(false));
 	}
 
 }
