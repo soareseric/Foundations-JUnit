@@ -4,19 +4,26 @@ import static br.com.ericsoares.utils.DataUtils.adicionarDias;
 
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import br.com.ericsoares.entities.Filme;
 import br.com.ericsoares.entities.Locacao;
 import br.com.ericsoares.entities.Usuario;
-import br.com.ericsoares.utils.DataUtils;
+import br.com.ericsoares.exceptions.FilmeSemEstoqueException;
+import br.com.ericsoares.exceptions.LocadoraException;
 
 public class LocacaoService {
 
-	public Locacao alugarFilme(Usuario usuario, Filme filme) throws Exception {
+	public Locacao alugarFilme(Usuario usuario, Filme filme) throws FilmeSemEstoqueException, LocadoraException   {
+		
+		if(usuario == null) {
+			throw new LocadoraException("Usuário vazio");
+		}
+		
+		if(filme == null) {
+			throw new LocadoraException("Filme vazio");
+		}
+		
 		if(filme.getEstoque() == 0) {
-			throw new Exception("O filme não possui estoque");
+			throw new FilmeSemEstoqueException();
 		}
 
 		Locacao locacao = new Locacao();
