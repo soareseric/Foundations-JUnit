@@ -6,9 +6,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -57,10 +58,10 @@ public class LocacaoServiceTest {
 
 		// ETAPA 1 : CENARIO
 		Usuario usuario = new Usuario("Usuario 1");
-		Filme filme = new Filme("Filme 1", 2, 5.0);
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 5.0));
 
 		// ETAPA 2 : AÇÃO
-		Locacao locacao = service.alugarFilme(usuario, filme);
+		Locacao locacao = service.alugarFilme(usuario, filmes);
 
 		// ETAPA 3 : VERIFICAÇÃO
 		err.checkThat(locacao.getValor(), is(equalTo(5.0))); // O Assert.assertThat É UM ASSERT GENERICO, QUE IRÁ RECEBER PRIMEIRO É O VALOR ATUAL E O SEGUNDO É O VALOR ESPERADO
@@ -81,20 +82,20 @@ public class LocacaoServiceTest {
 
 		// ETAPA 1 : CENARIO
 		Usuario usuario = new Usuario("Usuario 1");
-		Filme filme = new Filme("Filme 1", 0, 5.0);
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 0, 5.0));
 
 		// ETAPA 2 : AÇÃO
-		service.alugarFilme(usuario, filme);
+		service.alugarFilme(usuario, filmes);
 	}
 
 	@Test
 	public void testLocacao_usuarioVazio() throws FilmeSemEstoqueException {
 		// ETAPA 1 : CENARIO
-		Filme filme = new Filme("Filme 2", 1, 4.0);
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 2, 4.0));
 
 		// ETAPA 2 : AÇÃO
 		try {
-			service.alugarFilme(null, filme);
+			service.alugarFilme(null, filmes);
 			Assert.fail();
 		} catch (LocadoraException e) {
 			assertThat(e.getMessage(), is("Usuário vazio"));
