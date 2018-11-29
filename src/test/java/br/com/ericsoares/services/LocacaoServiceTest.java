@@ -5,11 +5,12 @@ import static br.com.ericsoares.utils.DataUtils.obterDataComDiferencaDias;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.util.Date;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -29,17 +30,32 @@ public class LocacaoServiceTest {
 	// NOSSO ÚNICO, EM TESTES MENORES, PARA TESTAR CADA FUNCIONALIDADE DA CLASSE QUE
 	// ESTAREMOS TESTANDO
 
+	private LocacaoService service; // Instanciando de forma global o LocacaoService
+	
 	@Rule // A annotation @Rule IRÁ DIZER QUE UMA REGRA SERÁ ESPECIFICADA. REGRAS AS QUAIS SÃO DE UMA API DO JUNIT PARA LIDAR COM ALGUMAS PECUALIDADES ( PODEMOS CRIAR NOSSAS PROPRIAS TB)
 	public ErrorCollector err = new ErrorCollector(); // UTILIZANDO ESSA REGRA, IREMOS FAZER COM QUE, MESMO NÃO DIVINDO NOSSO TESTE, EM MAIS DE UM PARA TESTAR SEPARADAMENTE CADA  MÉTODO, AINDA SIM IREMOS CONSEGUIR VISUALIZAR CADA ERRO QUE NOSSO ÚNICO TESTE POSSUI
 
 	@Rule
 	public ExpectedException expection = ExpectedException.none();
+	
+	// OUTRA ANNOTATION MUITO UTILIZADA NO JUNIT, É O BEFORE E O AFTER. NESSA CASO, O BEFORE SERVE PARA SETAR ALGO QUE SE APRESENTA
+	// EM TODOS OS TESTES, O QUE O FAZ SE TORNAR MUITO REPETITIVO, PORÉM COM O BEFORE, PRECISAMOS APENAS SETAR UMA VEZ, APÓS ISSO, SERÁ
+	// UTILIZADO PARA TODOS QUE PRECISAREM
+
+	@Before 
+	
+	public void setup() {
+	 service = new LocacaoService();
+	}
+	
+	// O AFTER SEGUE A MESMA LOGICA DO BEFORE, PORÉM PARA UMA PARTE DO CODIGO QUE VC DESEJA FAZER APARECER, HAVER, APÓS TODA SINTAXE DO TEST
+	//@After
+	
 
 	@Test
 	public void testLocacao() throws Exception {
 
 		// ETAPA 1 : CENARIO
-		LocacaoService service = new LocacaoService();
 		Usuario usuario = new Usuario("Usuario 1");
 		Filme filme = new Filme("Filme 1", 2, 5.0);
 
@@ -64,7 +80,6 @@ public class LocacaoServiceTest {
 	public void testLocacao_filmeSemEstoque() throws Exception {
 
 		// ETAPA 1 : CENARIO
-		LocacaoService service = new LocacaoService();
 		Usuario usuario = new Usuario("Usuario 1");
 		Filme filme = new Filme("Filme 1", 0, 5.0);
 
@@ -75,7 +90,6 @@ public class LocacaoServiceTest {
 	@Test
 	public void testLocacao_usuarioVazio() throws FilmeSemEstoqueException {
 		// ETAPA 1 : CENARIO
-		LocacaoService service = new LocacaoService();
 		Filme filme = new Filme("Filme 2", 1, 4.0);
 
 		// ETAPA 2 : AÇÃO
@@ -90,7 +104,6 @@ public class LocacaoServiceTest {
 	@Test
 	public void testLocacao_FilmeVazio() throws LocadoraException, FilmeSemEstoqueException {
 		// ETAPA 1 : CENARIO
-		LocacaoService service = new LocacaoService();
 		Usuario usuario = new Usuario("Usuario 1");
 
 		expection.expect(LocadoraException.class);
