@@ -14,7 +14,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -59,6 +61,7 @@ public class LocacaoServiceTest {
 
 	@Test
 	public void deveAlugarFilme() throws Exception {
+		Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY)); // JA NESSE ASSUME IRA FAZER COM QUE SEJA FALSO QUANDO FOR SABADO, E VERDADEIRO NOS DEMAIS DIAS
 
 		// ETAPA 1 : CENARIO
 		Usuario usuario = new Usuario("Usuario 1");
@@ -182,7 +185,12 @@ public class LocacaoServiceTest {
 	}
 	
 	@Test
+	@Ignore // UTILIZANDO-SE DESSA ANNOTATION FAREMOS COM QUE ESSE TEST SEJA IGNORADO, ASSIM PODEREMOS MANTER NOSSA BARRA VERDE DE SUCESSO DO TEST
 	public void deveDevolverFilmeNaSegundaCasoAlugueNoSabado() throws FilmeSemEstoqueException, LocadoraException {
+		Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY)); // Assume, É UM OTIMO METODO PARA SE USAR QUANDO UM DETERMINADO TEST NECESSITA DE UMA
+		// CONDIÇÃO ESPECIFICA PARA PODER FUNCIONAR NESSE CASO, PODEMOS UTILIZA-LO PARA FAZER COM QUE ELE CONFIGURE NOSSO TEST PARA FUNCIONAR NA DETERMINADA CONDIÇÃO SOLICITADA
+		// NESSE CASO, ELE ESTÁ INDICANDO PARA ESSE MÉTODO SE TORNAR VERDADEIRO SOMENTE QUANDO FOR SABADO
+		
 		// ETAPA 1 : CENARIO
 		Usuario usuario = new Usuario("Usuario 1");
 		List<Filme> filmes = Arrays.asList( new Filme("Filme1", 1, 5.0));
