@@ -1,5 +1,6 @@
 package br.com.ericsoares.services;
 
+import static br.com.ericsoares.builders.FilmeBuilder.umFilme;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -40,13 +41,13 @@ public class CalculoValorLocacaoTest {
 		service = new LocacaoService();
 	}
 	
-	private static Filme filme1 =  new Filme("Filme 1", 1, 4.0); // INSTANCIANDO OS FILMES EM VARIAVEIS
-	private static Filme filme2 =  new Filme("Filme 2", 1, 4.0);
-	private static Filme filme3 =  new Filme("Filme 3", 1, 4.0);
-	private static Filme filme4 =  new Filme("Filme 4", 1, 4.0);
-	private static Filme filme5 =  new Filme("Filme 5", 1, 4.0);
-	private static Filme filme6 =  new Filme("Filme 6", 1, 4.0);
-	private static Filme filme7 =  new Filme("Filme 7", 1, 4.0);
+	private static Filme filme1 =  umFilme().agora(); // INSTANCIANDO OS FILMES EM VARIAVEIS
+	private static Filme filme2 =  umFilme().agora();
+	private static Filme filme3 =  umFilme().agora();
+	private static Filme filme4 =  umFilme().agora();
+	private static Filme filme5 =  umFilme().agora();
+	private static Filme filme6 =  umFilme().agora();
+	private static Filme filme7 =  umFilme().agora();
 	
 	@Parameters(name="{2}") // O PARAMETRO PASSADO NESSA ANNOTATION DEFINI O VALOR A SER UTILIZADO COMO DEFINIÇÃO DE CADA TESTE
 	// NESSE CASO, SERÁ PASSADO O VALOR QUE A VARIAVEL CENARIO POSSUIR

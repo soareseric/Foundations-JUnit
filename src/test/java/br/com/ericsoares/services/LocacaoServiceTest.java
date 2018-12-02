@@ -1,5 +1,8 @@
 package br.com.ericsoares.services;
 
+import static br.com.ericsoares.builders.FilmeBuilder.umFilme;
+import static br.com.ericsoares.builders.FilmeBuilder.umFilmeSemEstoque;
+import static br.com.ericsoares.builders.UsuarioBuilder.umUsuario;
 import static br.com.ericsoares.matchers.MatchersProprios.caiNumaSegunda;
 import static br.com.ericsoares.matchers.MatchersProprios.ehHoje;
 import static br.com.ericsoares.matchers.MatchersProprios.ehHojeComDiferencaDias;
@@ -20,6 +23,7 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 
+import br.com.ericsoares.builders.FilmeBuilder;
 import br.com.ericsoares.entities.Filme;
 import br.com.ericsoares.entities.Locacao;
 import br.com.ericsoares.entities.Usuario;
@@ -63,8 +67,8 @@ public class LocacaoServiceTest {
 		Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY)); // JA NESSE ASSUME IRA FAZER COM QUE SEJA FALSO QUANDO FOR SABADO, E VERDADEIRO NOS DEMAIS DIAS
 
 		// ETAPA 1 : CENARIO
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 5.0));
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilme().comValor(5.0).agora());
 
 		// ETAPA 2 : AÇÃO
 		Locacao locacao = service.alugarFilme(usuario, filmes);
@@ -90,8 +94,8 @@ public class LocacaoServiceTest {
 	public void deveAlugarFilmeComEstoque() throws Exception {
 
 		// ETAPA 1 : CENARIO
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 0, 5.0));
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilmeSemEstoque().agora());
 
 		// ETAPA 2 : AÇÃO
 		service.alugarFilme(usuario, filmes);
@@ -100,7 +104,7 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveHaverUsuarioParaAlugarFilme() throws FilmeSemEstoqueException {
 		// ETAPA 1 : CENARIO
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 2, 4.0));
+		List<Filme> filmes = Arrays.asList(umFilme().agora());
 
 		// ETAPA 2 : AÇÃO
 		try {
@@ -114,7 +118,7 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveAlugarFilmeParaAlugarNaoPodeEstarVazio() throws LocadoraException, FilmeSemEstoqueException {
 		// ETAPA 1 : CENARIO
-		Usuario usuario = new Usuario("Usuario 1");
+		Usuario usuario = umUsuario().agora();
 
 		expection.expect(LocadoraException.class);
 		expection.expectMessage("Filme vazio");
@@ -131,8 +135,8 @@ public class LocacaoServiceTest {
 		// NESSE CASO, ELE ESTÁ INDICANDO PARA ESSE MÉTODO SE TORNAR VERDADEIRO SOMENTE QUANDO FOR SABADO
 		
 		// ETAPA 1 : CENARIO
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList( new Filme("Filme1", 1, 5.0));
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
 		
 		// ETAPA 2 : AÇÃO
