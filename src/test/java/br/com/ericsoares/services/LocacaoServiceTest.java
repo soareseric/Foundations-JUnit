@@ -2,13 +2,16 @@ package br.com.ericsoares.services;
 
 import static br.com.ericsoares.builders.FilmeBuilder.umFilme;
 import static br.com.ericsoares.builders.FilmeBuilder.umFilmeSemEstoque;
+import static br.com.ericsoares.builders.LocacaoBuilder.umLocacao;
 import static br.com.ericsoares.builders.UsuarioBuilder.umUsuario;
 import static br.com.ericsoares.matchers.MatchersProprios.caiNumaSegunda;
 import static br.com.ericsoares.matchers.MatchersProprios.ehHoje;
 import static br.com.ericsoares.matchers.MatchersProprios.ehHojeComDiferencaDias;
+import static br.com.ericsoares.utils.DataUtils.obterDataComDiferencaDias;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -23,17 +26,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import br.com.ericsoares.builders.LocacaoBuilder;
 import br.com.ericsoares.dao.LocacaoDAO;
-import br.com.ericsoares.dao.LocacaoDAOFake;
 import br.com.ericsoares.entities.Filme;
 import br.com.ericsoares.entities.Locacao;
 import br.com.ericsoares.entities.Usuario;
 import br.com.ericsoares.exceptions.FilmeSemEstoqueException;
 import br.com.ericsoares.exceptions.LocadoraException;
 import br.com.ericsoares.utils.DataUtils;
-import buildermaster.BuilderMaster;
 
 
 public class LocacaoServiceTest {
@@ -48,6 +51,7 @@ public class LocacaoServiceTest {
 
 	private SPCService spc;
 	private LocacaoDAO dao;
+	private EmailService email;
 	
 	@Rule // A annotation @Rule IRÁ DIZER QUE UMA REGRA SERÁ ESPECIFICADA. REGRAS AS QUAIS SÃO DE UMA API DO JUNIT PARA LIDAR COM ALGUMAS PECUALIDADES ( PODEMOS CRIAR NOSSAS PROPRIAS TB)
 	public ErrorCollector err = new ErrorCollector(); // UTILIZANDO ESSA REGRA, IREMOS FAZER COM QUE, MESMO NÃO DIVINDO NOSSO TESTE, EM MAIS DE UM PARA TESTAR SEPARADAMENTE CADA  MÉTODO, AINDA SIM IREMOS CONSEGUIR VISUALIZAR CADA ERRO QUE NOSSO ÚNICO TESTE POSSUI
@@ -67,6 +71,8 @@ public class LocacaoServiceTest {
 	 service.setLocacaoDAO(dao);
 	 spc = Mockito.mock(SPCService.class);
 	 service.setSPCService(spc);
+	 email = Mockito.mock(EmailService.class);
+	 service.setEmailService(email);
 	}
 	
 	// O AFTER SEGUE A MESMA LOGICA DO BEFORE, PORÉM PARA UMA PARTE DO CODIGO QUE VC DESEJA FAZER APARECER, HAVER, APÓS TODA SINTAXE DO TEST
@@ -160,18 +166,40 @@ public class LocacaoServiceTest {
 		
 	
 	@Test
-	public void naoDeveAlugarFilmeParaNegativoSPC() throws FilmeSemEstoqueException, LocadoraException {
+	public void naoDeveAlugarFilmeParaNegativoSPC() throws FilmeSemEstoqueException{
 		//CENARIO
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
 		
 		when(spc.passuiNegativacao(usuario)).thenReturn(true);
 		
-		expection.expect(LocadoraException.class);
-		expection.expectMessage("Usuario negativado!");
-		
 		//ACAO
-		service.alugarFilme(usuario, filmes);
+		try {
+			service.alugarFilme(usuario, filmes);
+			//VERIFICACAO
+			Assert.fail();
+		} catch (LocadoraException e) {
+			assertThat(e.getMessage(), is("Usuario negativado!"));
+		}
+		
+		
+		verify(spc).passuiNegativacao(usuario);
+	}
+	
+	@Test
+	public void deveEnviarEmailParaLocacoesAtrasadas() {
+		//CENARIO
+			Usuario usuario = umUsuario().agora();
+			List<Locacao> locacoes = Arrays.asList(
+					umLocacao()
+					.comUsuario(usuario)
+					.comDataRetorno(obterDataComDiferencaDias(-2))
+					.agora());
+			when(dao.obterLocacoesPendentes()).thenReturn(locacoes);
+		//ACAO
+			service.notificarAtraso();
+		//VERIFICAR
+			verify(email).notificarAtraso(usuario);
 	}
 	
 }
