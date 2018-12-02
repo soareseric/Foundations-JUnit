@@ -15,6 +15,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
+import br.com.ericsoares.dao.LocacaoDAO;
+import br.com.ericsoares.dao.LocacaoDAOFake;
 import br.com.ericsoares.entities.Filme;
 import br.com.ericsoares.entities.Locacao;
 import br.com.ericsoares.entities.Usuario;
@@ -39,6 +41,8 @@ public class CalculoValorLocacaoTest {
 	@Before
 	public void setup() {
 		service = new LocacaoService();
+		LocacaoDAO dao = new LocacaoDAOFake();
+		service.setLocacaoDAO(dao);
 	}
 	
 	private static Filme filme1 =  umFilme().agora(); // INSTANCIANDO OS FILMES EM VARIAVEIS

@@ -23,7 +23,8 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 
-import br.com.ericsoares.builders.FilmeBuilder;
+import br.com.ericsoares.dao.LocacaoDAO;
+import br.com.ericsoares.dao.LocacaoDAOFake;
 import br.com.ericsoares.entities.Filme;
 import br.com.ericsoares.entities.Locacao;
 import br.com.ericsoares.entities.Usuario;
@@ -57,6 +58,8 @@ public class LocacaoServiceTest {
 	
 	public void setup() {
 	 service = new LocacaoService();
+	 LocacaoDAO dao = new LocacaoDAOFake();
+	 service.setLocacaoDAO(dao);
 	}
 	
 	// O AFTER SEGUE A MESMA LOGICA DO BEFORE, PORÉM PARA UMA PARTE DO CODIGO QUE VC DESEJA FAZER APARECER, HAVER, APÓS TODA SINTAXE DO TEST

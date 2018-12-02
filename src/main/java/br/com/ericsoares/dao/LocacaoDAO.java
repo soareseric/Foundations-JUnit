@@ -2,9 +2,7 @@ package br.com.ericsoares.dao;
 
 import br.com.ericsoares.entities.Locacao;
 
-public class LocacaoDAO {
+public interface LocacaoDAO {
 
-	public void salvar(Locacao locacao) {
-		
-	}
+	public void salvar(Locacao locacao);
 }
