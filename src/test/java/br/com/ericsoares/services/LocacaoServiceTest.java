@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -222,14 +223,30 @@ public class LocacaoServiceTest {
 		List<Filme> filmes = Arrays.asList(umFilme().agora());	
 		
 		when(spc.passuiNegativacao(usuario)).thenThrow(new Exception("Falha catrastrófica"));
-		
+
 		expection.expect(LocadoraException.class);
 		expection.expectMessage("Problemas com SPC, tente novamente");
 		
 		//ACAO
 		service.alugarFilme(usuario, filmes);
+	}
+	
+	@Test
+	public void deveProrrogarUmaLocacao() {
+		//CENARIO
+		Locacao locacao = umLocacao().agora();
 		
+		//ACAO
+		service.prorrogarLocacao(locacao, 3);
 		
+		//VERIFICACAO
+		ArgumentCaptor<Locacao> argCapt = ArgumentCaptor.forClass(Locacao.class);
+		Mockito.verify(dao).salvar(argCapt.capture());
+		Locacao locacaoRetornada = argCapt.getValue();
+		
+		err.checkThat(locacaoRetornada.getValor(), is(12.0));
+		err.checkThat(locacaoRetornada.getDataLocacao(), ehHoje());
+		err.checkThat(locacaoRetornada.getDataRetorno(), ehHojeComDiferencaDias(3));
 	}
 	
 	
