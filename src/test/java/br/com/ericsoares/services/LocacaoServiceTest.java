@@ -1,12 +1,11 @@
 package br.com.ericsoares.services;
 
-import static br.com.ericsoares.utils.DataUtils.isMesmaData;
-import static br.com.ericsoares.utils.DataUtils.obterDataComDiferencaDias;
-import static br.com.ericsoares.utils.DataUtils.verificarDiaSemana;
+import static br.com.ericsoares.matchers.MatchersProprios.caiNumaSegunda;
+import static br.com.ericsoares.matchers.MatchersProprios.ehHoje;
+import static br.com.ericsoares.matchers.MatchersProprios.ehHojeComDiferencaDias;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -16,7 +15,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -73,8 +71,11 @@ public class LocacaoServiceTest {
 
 		// ETAPA 3 : VERIFICAÇÃO
 		err.checkThat(locacao.getValor(), is(equalTo(5.0))); // O Assert.assertThat É UM ASSERT GENERICO, QUE IRÁ RECEBER PRIMEIRO É O VALOR ATUAL E O SEGUNDO É O VALOR ESPERADO
-		err.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
-		err.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(true));
+		
+		//err.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
+		err.checkThat(locacao.getDataLocacao(), ehHoje()); // COM MATCHERS PERSONALIZADOS PODEMOS SIMPLIFICAR, DEIXANDO MAIS LEGIVEL NOSSO CODIGO
+		//err.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(true));
+		err.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1)); // COM MATCHERS PERSONALIZADOS PODEMOS SIMPLIFICAR, DEIXANDO MAIS LEGIVEL NOSSO CODIGO
 
 	}
 
@@ -123,7 +124,7 @@ public class LocacaoServiceTest {
 	}
 	
 	@Test
-	@Ignore // UTILIZANDO-SE DESSA ANNOTATION FAREMOS COM QUE ESSE TEST SEJA IGNORADO, ASSIM PODEREMOS MANTER NOSSA BARRA VERDE DE SUCESSO DO TEST
+	// @Ignore // UTILIZANDO-SE DESSA ANNOTATION FAREMOS COM QUE ESSE TEST SEJA IGNORADO, ASSIM PODEREMOS MANTER NOSSA BARRA VERDE DE SUCESSO DO TEST
 	public void deveDevolverFilmeNaSegundaCasoAlugueNoSabado() throws FilmeSemEstoqueException, LocadoraException {
 		Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY)); // Assume, É UM OTIMO METODO PARA SE USAR QUANDO UM DETERMINADO TEST NECESSITA DE UMA
 		// CONDIÇÃO ESPECIFICA PARA PODER FUNCIONAR NESSE CASO, PODEMOS UTILIZA-LO PARA FAZER COM QUE ELE CONFIGURE NOSSO TEST PARA FUNCIONAR NA DETERMINADA CONDIÇÃO SOLICITADA
@@ -138,8 +139,8 @@ public class LocacaoServiceTest {
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
 		// ETAPA 3 : VERIFICAÇÃO
-		boolean ehSegunda = verificarDiaSemana(retorno.getDataRetorno(), Calendar.MONDAY);
-		assertTrue(ehSegunda); 
+		//assertThat(retorno.getDataRetorno(), new DiaSemanaMatcher(Calendar.MONDAY));
+		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
 	}
 		
 	
