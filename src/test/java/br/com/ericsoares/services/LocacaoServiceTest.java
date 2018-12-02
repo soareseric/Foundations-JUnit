@@ -9,6 +9,7 @@ import static br.com.ericsoares.matchers.MatchersProprios.ehHojeComDiferencaDias
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -44,6 +45,9 @@ public class LocacaoServiceTest {
 	// ESTAREMOS TESTANDO
 
 	private LocacaoService service; // Instanciando de forma global o LocacaoService
+
+	private SPCService spc;
+	private LocacaoDAO dao;
 	
 	@Rule // A annotation @Rule IRÁ DIZER QUE UMA REGRA SERÁ ESPECIFICADA. REGRAS AS QUAIS SÃO DE UMA API DO JUNIT PARA LIDAR COM ALGUMAS PECUALIDADES ( PODEMOS CRIAR NOSSAS PROPRIAS TB)
 	public ErrorCollector err = new ErrorCollector(); // UTILIZANDO ESSA REGRA, IREMOS FAZER COM QUE, MESMO NÃO DIVINDO NOSSO TESTE, EM MAIS DE UM PARA TESTAR SEPARADAMENTE CADA  MÉTODO, AINDA SIM IREMOS CONSEGUIR VISUALIZAR CADA ERRO QUE NOSSO ÚNICO TESTE POSSUI
@@ -59,8 +63,10 @@ public class LocacaoServiceTest {
 	
 	public void setup() {
 	 service = new LocacaoService();
-	 LocacaoDAO dao = Mockito.mock(LocacaoDAO.class);	 
+	 dao = Mockito.mock(LocacaoDAO.class);	 
 	 service.setLocacaoDAO(dao);
+	 spc = Mockito.mock(SPCService.class);
+	 service.setSPCService(spc);
 	}
 	
 	// O AFTER SEGUE A MESMA LOGICA DO BEFORE, PORÉM PARA UMA PARTE DO CODIGO QUE VC DESEJA FAZER APARECER, HAVER, APÓS TODA SINTAXE DO TEST
@@ -153,8 +159,19 @@ public class LocacaoServiceTest {
 	}
 		
 	
-	public static void main(String[] args) {
-		new BuilderMaster().gerarCodigoClasse(Locacao.class); // UTILIZANDO A LIB BUILDER MASTER, PARA GERAR NOSSA CLASSE LOCACAO BUILDER AUTOMATICAMENTE
+	@Test
+	public void naoDeveAlugarFilmeParaNegativoSPC() throws FilmeSemEstoqueException, LocadoraException {
+		//CENARIO
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilme().agora());
+		
+		when(spc.passuiNegativacao(usuario)).thenReturn(true);
+		
+		expection.expect(LocadoraException.class);
+		expection.expectMessage("Usuario negativado!");
+		
+		//ACAO
+		service.alugarFilme(usuario, filmes);
 	}
 	
 }
