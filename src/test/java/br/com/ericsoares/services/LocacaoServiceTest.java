@@ -30,6 +30,7 @@ import br.com.ericsoares.entities.Usuario;
 import br.com.ericsoares.exceptions.FilmeSemEstoqueException;
 import br.com.ericsoares.exceptions.LocadoraException;
 import br.com.ericsoares.utils.DataUtils;
+import buildermaster.BuilderMaster;
 
 
 public class LocacaoServiceTest {
@@ -147,5 +148,9 @@ public class LocacaoServiceTest {
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
 	}
 		
+	
+	public static void main(String[] args) {
+		new BuilderMaster().gerarCodigoClasse(Locacao.class); // UTILIZANDO A LIB BUILDER MASTER, PARA GERAR NOSSA CLASSE LOCACAO BUILDER AUTOMATICAMENTE
+	}
 	
 }
