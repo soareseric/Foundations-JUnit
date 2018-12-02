@@ -4,5 +4,5 @@ import br.com.ericsoares.entities.Usuario;
 
 public interface SPCService {
 
-	public boolean passuiNegativacao(Usuario usuario);
+	public boolean passuiNegativacao(Usuario usuario) throws Exception;
 }

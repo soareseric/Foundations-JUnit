@@ -30,8 +30,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import br.com.ericsoares.builders.LocacaoBuilder;
 import br.com.ericsoares.dao.LocacaoDAO;
@@ -51,10 +53,16 @@ public class LocacaoServiceTest {
 	// NOSSO ÚNICO, EM TESTES MENORES, PARA TESTAR CADA FUNCIONALIDADE DA CLASSE QUE
 	// ESTAREMOS TESTANDO
 
+	@InjectMocks
 	private LocacaoService service; // Instanciando de forma global o LocacaoService
 
+	@Mock
 	private SPCService spc;
+	
+	@Mock
 	private LocacaoDAO dao;
+	
+	@Mock
 	private EmailService email;
 	
 	@Rule // A annotation @Rule IRÁ DIZER QUE UMA REGRA SERÁ ESPECIFICADA. REGRAS AS QUAIS SÃO DE UMA API DO JUNIT PARA LIDAR COM ALGUMAS PECUALIDADES ( PODEMOS CRIAR NOSSAS PROPRIAS TB)
@@ -70,13 +78,7 @@ public class LocacaoServiceTest {
 	@Before 
 	
 	public void setup() {
-	 service = new LocacaoService();
-	 dao = Mockito.mock(LocacaoDAO.class);	 
-	 service.setLocacaoDAO(dao);
-	 spc = Mockito.mock(SPCService.class);
-	 service.setSPCService(spc);
-	 email = Mockito.mock(EmailService.class);
-	 service.setEmailService(email);
+	 MockitoAnnotations.initMocks(this);
 	}
 	
 	// O AFTER SEGUE A MESMA LOGICA DO BEFORE, PORÉM PARA UMA PARTE DO CODIGO QUE VC DESEJA FAZER APARECER, HAVER, APÓS TODA SINTAXE DO TEST
@@ -170,7 +172,7 @@ public class LocacaoServiceTest {
 		
 	
 	@Test
-	public void naoDeveAlugarFilmeParaNegativoSPC() throws FilmeSemEstoqueException{
+	public void naoDeveAlugarFilmeParaNegativoSPC() throws Exception{
 		//CENARIO
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
@@ -212,5 +214,23 @@ public class LocacaoServiceTest {
 			verifyNoMoreInteractions(email);
 			
 	}
+	
+	@Test
+	public void deveTratarErroSPC() throws Exception {
+		//CENARIO
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilme().agora());	
+		
+		when(spc.passuiNegativacao(usuario)).thenThrow(new Exception("Falha catrastrófica"));
+		
+		expection.expect(LocadoraException.class);
+		expection.expectMessage("Problemas com SPC, tente novamente");
+		
+		//ACAO
+		service.alugarFilme(usuario, filmes);
+		
+		
+	}
+	
 	
 }
